@@ -1,0 +1,19 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/Customization/BlanketSalesOrders/Bin/PX.Objects.Delta.dll
+/packages
+/PX.Objects.Delta/bin
+/PX.Objects.Delta/obj
+/Site/App_Data/WebsiteID3926105012.txt
+/Site/App_Data/WebsiteID1362530362.txt
+/Site/App_Data/UpdateStatus.xml
+/Site/App_Data/selflog.txt
+/Site/App_Data/binding.xml
+/Site/Bin/PX.Objects.Delta.pdb
+/Site/Bin/PX.Objects.Delta.dll
+/Site/web.config
+/Site/web.config.DEV
+/Site/CstPublished
