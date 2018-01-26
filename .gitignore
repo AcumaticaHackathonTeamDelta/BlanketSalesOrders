@@ -17,3 +17,5 @@
 /Site/web.config
 /Site/web.config.DEV
 /Site/CstPublished
+/Site/App_Data/WebsiteSolution/Addon/obj
+/Site/App_Data/WebsiteSolution/App_Subcode_Caches/obj
