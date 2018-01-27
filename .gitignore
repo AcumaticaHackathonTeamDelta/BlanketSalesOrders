@@ -18,5 +18,10 @@
 /Site/web.config.DEV
 /Site/CstPublished
 /Site/App_Data/WebsiteSolution/Addon/obj
-/Site/App_Data/WebsiteSolution/App_Subcode_Caches/obj
-/Publish.Demo.lnk
+/Site/App_Data/WebsiteSolution/App_Subcode_Caches
+/Publish*.lnk
+/ERP
+/Site/App_Data/CheckinFiles.xml
+/Site/App_Data/CustomizationRollback.xml
+/Site/App_Data/CustomizationPublishedInfo.xml
+/Site/App_Data/CustomizationPublishedDoc.zip
