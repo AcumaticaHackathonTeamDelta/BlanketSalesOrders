@@ -1,0 +1,16 @@
+﻿<Sql TableName="SOLineDAExtension" TableSchemaXml="#CDATA">
+    <CDATA name="TableSchemaXml"><![CDATA[<table name="SOLineDAExtension">
+  <col name="CompanyID" type="Int" default="Zero" />
+  <col name="DABlanketOrderType" type="Char(2)" />
+  <col name="DABlanketOrderNbr" type="NVarChar(15)" />
+  <col name="DABlanketLineNbr" type="Int" />
+  <col name="DABlanketOrderQty" type="Decimal(25,6)" nullable="true" />
+  <col name="DABlanketBaseOrderQty" type="Decimal(25,6)" nullable="true" />
+  <index name="SOLineDAExtension_PK" clustered="true" primary="true" unique="true">
+    <col name="CompanyID" />
+    <col name="DABlanketOrderType" />
+    <col name="DABlanketOrderNbr" />
+    <col name="DABlanketLineNbr" />
+  </index>
+</table>]]></CDATA>
+</Sql>

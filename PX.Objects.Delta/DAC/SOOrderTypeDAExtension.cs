@@ -2,7 +2,7 @@
 using PX.Data;
 using PX.Objects.SO;
 
-namespace PX.Objects.Delta.DAC
+namespace PX.Objects.Delta
 {
     /// <summary>
     /// Delta extension table for sales order types
