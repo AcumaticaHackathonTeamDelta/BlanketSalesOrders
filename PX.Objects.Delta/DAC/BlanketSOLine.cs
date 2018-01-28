@@ -190,7 +190,7 @@ namespace PX.Objects.Delta
         {
         }
         protected Int32? _InventoryID;
-        [PXDBInt(BqlField = typeof(SOLine.inventoryID))]
+        [Inventory(BqlField = typeof(SOLine.inventoryID))]
         public virtual Int32? InventoryID
         {
             get
@@ -208,7 +208,7 @@ namespace PX.Objects.Delta
         {
         }
         protected Int32? _SubItemID;
-        [PXDBInt(BqlField = typeof(SOLine.subItemID))]
+        [SubItem(BqlField = typeof(SOLine.subItemID))]
         public virtual Int32? SubItemID
         {
             get
@@ -226,7 +226,7 @@ namespace PX.Objects.Delta
         {
         }
         protected Int32? _SiteID;
-        [PXDBInt(BqlField = typeof(SOLine.siteID))]
+        [Site(BqlField = typeof(SOLine.siteID))]
         public virtual Int32? SiteID
         {
             get
@@ -298,7 +298,7 @@ namespace PX.Objects.Delta
         {
         }
         protected String _UOM;
-        [INUnit(typeof(BlanketSOLine.inventoryID), BqlField = typeof(BlanketSOLine.uOM))]
+        [INUnit(typeof(BlanketSOLine.inventoryID), BqlField = typeof(SOLine.uOM))]
         public virtual String UOM
         {
             get

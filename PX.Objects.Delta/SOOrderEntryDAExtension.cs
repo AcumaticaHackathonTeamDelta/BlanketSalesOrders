@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using PX.Data;
 using PX.Objects.CS;
 using PX.Objects.SO;
@@ -20,10 +21,10 @@ namespace PX.Objects.Delta
 
         public PXSelect<BlanketSOLine, Where<BlanketSOLine.openQty, Greater<decimal0>>> blanketLinesSelected;
 
-        public PXSelect<SOLine,
-            Where<SOLineDAExtension.dABlanketOrderType, Equal<Optional<SOLineDAExtension.dABlanketOrderType>>,
-                And<SOLineDAExtension.dABlanketOrderNbr, Equal<Optional<SOLineDAExtension.dABlanketOrderNbr>>,
-                    And<SOLineDAExtension.dABlanketLineNbr, Equal<Optional<SOLineDAExtension.dABlanketLineNbr>>>>>> blanketLinkedLines;
+        //public PXSelect<SOLine,
+        //    Where<SOLineDAExtension.dABlanketOrderType, Equal<Optional<SOLineDAExtension.dABlanketOrderType>>,
+        //        And<SOLineDAExtension.dABlanketOrderNbr, Equal<Optional<SOLineDAExtension.dABlanketOrderNbr>>,
+        //            And<SOLineDAExtension.dABlanketLineNbr, Equal<Optional<SOLineDAExtension.dABlanketLineNbr>>>>>> blanketLinkedLines;
 
         /// <summary>
         /// Does the current order type indicate the order is a blanket order
@@ -53,25 +54,13 @@ namespace PX.Objects.Delta
                 return;
             }
 
+            var rowExt = row.GetExtension<SOLineDAExtension>();
+
             var orderQtyChange = oldRow.OrderQty.GetValueOrDefault() - row.OrderQty.GetValueOrDefault();
             if (orderQtyChange != 0)
             {
-                row.OpenQty += orderQtyChange;
+                row.OpenQty = Math.Max(row.OrderQty.GetValueOrDefault() - rowExt.DABlanketOrderQty.GetValueOrDefault(), 0m);
             }
-
-            //var blanketLine = (SOLineBlanket)SOLineBlanket.Select(row.OrigOrderType, row.OrigOrderNbr, row.OrigLineNbr);
-
-            //var diff = row.BaseOrderQty - oldRow.BaseOrderQty;
-
-            //if (row.Behavior == SOBehavior.QT && blanketLine == null)
-            //{
-            //    row.OpenQty += INUnitAttribute.ConvertFromBase(sender, row.InventoryID, row.UOM, diff.GetValueOrDefault(), INPrecision.QUANTITY);
-            //}
-            //else if (blanketLine != null)
-            //{
-            //    blanketLine.OpenQty -= INUnitAttribute.ConvertFromBase(sender, blanketLine.InventoryID, blanketLine.UOM, diff.GetValueOrDefault(), INPrecision.QUANTITY);
-            //    SOLineBlanket.Cache.SetStatus(blanketLine, PXEntryStatus.Updated);
-            //}
         }
 
         /// <summary>
@@ -115,7 +104,7 @@ namespace PX.Objects.Delta
                 {
                     // clear selected
                     //var ext = row.GetExtension<SOLineDAExtension>();
-                    //ext.se = false;
+                    //ext.DASelected = false;
                     row.Selected = false;
                 }
                 return adapter.Get();
@@ -125,6 +114,8 @@ namespace PX.Objects.Delta
             {
                 AddSOLine(row);
                 // clear selected
+                //var ext = row.GetExtension<SOLineDAExtension>();
+                //ext.DASelected = false;
                 row.Selected = false;
             }
 
@@ -133,7 +124,7 @@ namespace PX.Objects.Delta
 
         private void AddSOLine(BlanketSOLine row)
         {
-            //throw new System.NotImplementedException();
+            // Add the lines to the order...
         }
     }
 }
