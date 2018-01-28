@@ -53,8 +53,10 @@
     <Compile Include="DAC\BlanketSOLine.cs" />
     <Compile Include="DAC\SOLineDAExtension.cs" />
     <Compile Include="DAC\SOOrderTypeDAExtension.cs" />
+    <Compile Include="DAC\Standalone\SOLineDAExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SOOrderEntryDAExtension.cs" />
+    <Compile Include="SOShipmentEntryDAExtension.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

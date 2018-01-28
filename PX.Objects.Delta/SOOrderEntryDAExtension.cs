@@ -43,7 +43,7 @@ namespace PX.Objects.Delta
         public virtual void SOOrder_RowSelected(PXCache cache, PXRowSelectedEventArgs e, PXRowSelected del)
         {
             del?.Invoke(cache, e);
-
+            AddBlanketOrderLineAction.SetEnabled(IsBlanketOrder);
             PXUIFieldAttribute.SetVisible<SOLineDAExtension.dABlanketOrderQty>(Base.Transactions.Cache, null, IsBlanketOrder);
         }
 
@@ -57,6 +57,8 @@ namespace PX.Objects.Delta
             {
                 return;
             }
+
+            //TODO: use base qty in case order UOM diff from blanket
 
             var rowExt = row.GetExtension<SOLineDAExtension>();
             var orderQtyChange = oldRow.OrderQty.GetValueOrDefault() - row.OrderQty.GetValueOrDefault();
