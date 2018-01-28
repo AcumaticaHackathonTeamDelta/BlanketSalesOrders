@@ -35,6 +35,11 @@ namespace PX.Objects.Delta
 
         protected virtual SOOrderTypeDAExtension GetCurrentORderTypeExtension => Base?.soordertype?.Current?.GetExtension<SOOrderTypeDAExtension>();
 
+        public SOOrderEntryDAExtension()
+        {
+            PXUIFieldAttribute.SetEnabled<SOLineSplit.shipDate>(Base.splits.Cache, null, true);
+        }
+
         public virtual void SOOrder_RowSelected(PXCache cache, PXRowSelectedEventArgs e, PXRowSelected del)
         {
             del?.Invoke(cache, e);
