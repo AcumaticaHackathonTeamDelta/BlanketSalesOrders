@@ -36,6 +36,14 @@ namespace PX.Objects.Delta
 
         protected virtual SOOrderTypeDAExtension GetCurrentORderTypeExtension => Base?.soordertype?.Current?.GetExtension<SOOrderTypeDAExtension>();
 
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            PXUIFieldAttribute.SetEnabled<SOLineSplit.shipDate>(Base.splits.Cache, null, true);
+
+        }
+
         public virtual void SOOrder_RowSelected(PXCache cache, PXRowSelectedEventArgs e, PXRowSelected del)
         {
             del?.Invoke(cache, e);
@@ -102,9 +110,6 @@ namespace PX.Objects.Delta
             {
                 foreach (BlanketSOLine row in blanketLinesSelected.Cache.Updated)
                 {
-                    // clear selected
-                    //var ext = row.GetExtension<SOLineDAExtension>();
-                    //ext.DASelected = false;
                     row.Selected = false;
                 }
                 return adapter.Get();
@@ -113,9 +118,6 @@ namespace PX.Objects.Delta
             foreach (BlanketSOLine row in blanketLinesSelected.Cache.Updated)
             {
                 AddSOLine(row);
-                // clear selected
-                //var ext = row.GetExtension<SOLineDAExtension>();
-                //ext.DASelected = false;
                 row.Selected = false;
             }
 
