@@ -47,8 +47,10 @@ namespace PX.Objects.Delta
             PXUIFieldAttribute.SetVisible<SOLineDAExtension.dABlanketOrderQty>(Base.Transactions.Cache, null, IsBlanketOrder);
         }
 
-        protected virtual void SOLine_RowUpdated(PXCache sender, PXRowUpdatedEventArgs e)
+        protected virtual void SOLine_RowUpdated(PXCache sender, PXRowUpdatedEventArgs e, PXRowUpdated del)
         {
+            del?.Invoke(sender, e);
+
             var row = (SOLine)e.Row;
             var oldRow = (SOLine)e.OldRow;
             if (row == null || oldRow == null)
@@ -69,6 +71,35 @@ namespace PX.Objects.Delta
                 return;
             }
 
+            UpdateParentBlanketOrderLine(row, orderQtyChange * -1);
+        }
+
+        protected virtual void SOLine_RowDeleted(PXCache sender, PXRowDeletedEventArgs e, PXRowDeleted del)
+        {
+            del?.Invoke(sender, e);
+
+            var row = (SOLine)e.Row;
+            if (row == null || IsBlanketOrder)
+            {
+                return;
+            }
+
+            UpdateParentBlanketOrderLine(row, row.OrderQty.GetValueOrDefault() * -1);
+        }
+
+        /// <summary>
+        /// Update the parent blanket order line to reflect the child line qty changing
+        /// </summary>
+        /// <param name="childOrderLine">child row of blanket order to update</param>
+        /// <param name="orderQtyChange">qty changing (+/-)</param>
+        protected virtual void UpdateParentBlanketOrderLine(SOLine childOrderLine, decimal orderQtyChange)
+        {
+            if (childOrderLine == null || orderQtyChange == 0m)
+            {
+                return;
+            }
+
+            var rowExt = childOrderLine.GetExtension<SOLineDAExtension>();
             var parentBlanketLine = (BlanketSOLine)PXSelect<BlanketSOLine,
                 Where<BlanketSOLine.orderType, Equal<Required<BlanketSOLine.orderType>>,
                     And<BlanketSOLine.orderNbr, Equal<Required<BlanketSOLine.orderNbr>>,
@@ -80,7 +111,7 @@ namespace PX.Objects.Delta
                 return;
             }
 
-            parentBlanketLine.DABlanketOrderQty += orderQtyChange * -1;
+            parentBlanketLine.DABlanketOrderQty += orderQtyChange;
             if (parentBlanketLine.DABlanketOrderQty.GetValueOrDefault() < 0m)
             {
                 parentBlanketLine.DABlanketOrderQty = 0m;
@@ -99,26 +130,6 @@ namespace PX.Objects.Delta
         [PXLookupButton]
         public virtual IEnumerable addBlanketOrderLineAction(PXAdapter adapter)
         {
-            //if (this.Document.Current != null &&
-            //    this.Document.Current.Hold == true &&
-            //    POOrderType.IsUseBlanket(this.Document.Current.OrderType))
-            //{
-            //    if (this.poLinesSelection.AskExt() == WebDialogResult.OK)
-            //    {
-            //        foreach (POLineS it in poLinesSelection.Cache.Updated)
-            //        {
-            //            if ((bool)it.Selected)
-            //                this.AddPOLine(it, this.filter.Current.OrderType == POOrderType.Blanket);
-            //            it.Selected = false;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        foreach (POLineS it in poLinesSelection.Cache.Updated)
-            //            it.Selected = false;
-            //    }
-            //}
-
             if (IsBlanketOrder)
             {
                 return adapter.Get();
@@ -156,6 +167,7 @@ namespace PX.Objects.Delta
             newRow.SiteID = row.SiteID;
             newRow.LocationID = row.LocationID;
             newRow.OrderQty = row.OpenQty;
+            newRow.TranDesc = row.TranDesc;
 
             var newRowExt = newRow.GetExtension<SOLineDAExtension>();
             if (newRowExt != null)
