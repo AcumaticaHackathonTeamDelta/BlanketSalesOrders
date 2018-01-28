@@ -53,7 +53,7 @@ namespace PX.Objects.Delta
         #region DABlanketOrderQty
         [PXDefault(TypeCode.Decimal, "0.0", PersistingCheck = PXPersistingCheck.Nothing)]
         [PXDBQuantity(typeof(SOLine.uOM), typeof(SOLineDAExtension.dABlanketBaseOrderQty))]
-        [PXUIField(DisplayName = "Blanket Order Qty")]
+        [PXUIField(DisplayName = "Qty On Open Orders")]
         public virtual decimal? DABlanketOrderQty { get; set; }
         public abstract class dABlanketOrderQty : IBqlField { }
         #endregion

@@ -115,4 +115,15 @@
             </AddItem>
         </Children>
     </Content>
+    <PXGridLevel DataMember="Transactions" ParentId="phG_tab_Items#0_grid_Levels#0" TypeFullName="PX.Web.UI.PXGridLevel">
+        <Children Key="Columns">
+            <AddItem>
+                <PXGridColumn TypeFullName="PX.Web.UI.PXGridColumn">
+                    <Prop Key="DataField" Value="DABlanketOrderQty" />
+                    <Prop Key="Width" Value="81px" />
+                </PXGridColumn>
+            </AddItem>
+            <PXGridColumn DataField="BaseOrderQty" OriginalIndex="30" />
+        </Children>
+    </PXGridLevel>
 </Page>

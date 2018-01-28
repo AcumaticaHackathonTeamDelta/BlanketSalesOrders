@@ -41,7 +41,7 @@ namespace PX.Objects.Delta
             base.Initialize();
 
             PXUIFieldAttribute.SetEnabled<SOLineSplit.shipDate>(Base.splits.Cache, null, true);
-
+            PXUIFieldAttribute.SetEnabled<SOLineDAExtension.dABlanketOrderQty>(Base.Transactions.Cache, null, false);
         }
 
         public virtual void SOOrder_RowSelected(PXCache cache, PXRowSelectedEventArgs e, PXRowSelected del)
@@ -50,7 +50,9 @@ namespace PX.Objects.Delta
 
             // Need to disable/hide add blanket lines for blanket orders or non SO types...
 
-            //Also hide custom open order qty column of soline extension
+            //hide custom open order qty column of soline extension
+            PXUIFieldAttribute.SetVisible<SOLineDAExtension.dABlanketOrderQty>(Base.Transactions.Cache, null, IsBlanketOrder);
+
         }
 
         protected virtual void SOLine_RowUpdated(PXCache sender, PXRowUpdatedEventArgs e)
