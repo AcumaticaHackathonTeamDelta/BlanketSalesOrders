@@ -145,10 +145,12 @@ namespace PX.Objects.Delta
                 return adapter.Get();
             }
 
+            SOOrder currentOrder = Base?.Document?.Current;
             foreach (BlanketSOLine row in blanketLinesSelected.Cache.Updated)
             {
                 AddSOLine(row);
                 row.Selected = false;
+                Base.Document.Current = currentOrder; //For now - make sure document current is staying set correctly...
             }
 
             return adapter.Get();
@@ -157,18 +159,24 @@ namespace PX.Objects.Delta
         private void AddSOLine(BlanketSOLine row)
         {
             // Add the lines to the order...
-            if (row?.OrderNbr == null)
+            if (row?.OrderNbr == null || Base.Document.Current == null)
             {
                 return;
             }
 
-            var newRow = Base.Transactions.Insert(new SOLine());
+            var newRow = Base.Transactions.Insert(new SOLine
+            {
+                OrderType = Base.Document.Current.OrderType,
+                OrderNbr = Base.Document.Current.OrderNbr
+            });
             newRow.InventoryID = row.InventoryID;
             newRow.SubItemID = row.SubItemID;
             newRow.SiteID = row.SiteID;
             newRow.LocationID = row.LocationID;
             newRow.OrderQty = row.OpenQty;
             newRow.TranDesc = row.TranDesc;
+            //newRow.CuryUnitCost = row.CuryUnitCost; //Assumes same currency
+            newRow.DiscPct = row.DiscPct;
 
             var newRowExt = newRow.GetExtension<SOLineDAExtension>();
             if (newRowExt != null)
