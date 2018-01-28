@@ -14,5 +14,10 @@ namespace PX.Objects.Delta
         public bool IsBlanketOrder => GetCurrentORderTypeExtension?.DAIsBlanketOrder ?? false;
 
         protected virtual SOOrderTypeDAExtension GetCurrentORderTypeExtension => Base?.soordertype?.Current?.GetExtension<SOOrderTypeDAExtension>();
+
+        public SOOrderEntryDAExtension()
+        {
+            PXUIFieldAttribute.SetEnabled<SOLineSplit.shipDate>(Base.splits.Cache, null, true);
+        }
     }
 }
