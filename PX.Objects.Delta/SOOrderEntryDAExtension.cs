@@ -37,13 +37,12 @@ namespace PX.Objects.Delta
             base.Initialize();
 
             PXUIFieldAttribute.SetEnabled<SOLineSplit.shipDate>(Base.splits.Cache, null, true);
-            PXUIFieldAttribute.SetEnabled<SOLineDAExtension.dABlanketOrderQty>(Base.Transactions.Cache, null, false);
         }
 
         public virtual void SOOrder_RowSelected(PXCache cache, PXRowSelectedEventArgs e, PXRowSelected del)
         {
             del?.Invoke(cache, e);
-            AddBlanketOrderLineAction.SetEnabled(IsBlanketOrder);
+            AddBlanketOrderLineAction.SetEnabled(!IsBlanketOrder);
             PXUIFieldAttribute.SetVisible<SOLineDAExtension.dABlanketOrderQty>(Base.Transactions.Cache, null, IsBlanketOrder);
         }
 
@@ -127,8 +126,8 @@ namespace PX.Objects.Delta
         /// </summary>
         public PXAction<SOOrder> AddBlanketOrderLineAction;
 
-        [PXUIField(DisplayName = "Add Blanket Order Line", MapEnableRights = PXCacheRights.Select,
-            MapViewRights = PXCacheRights.Select, Visible = true)]
+        [PXUIField(DisplayName = "Add Blanket Order", MapEnableRights = PXCacheRights.Select,
+            MapViewRights = PXCacheRights.Select)]
         [PXLookupButton]
         public virtual IEnumerable addBlanketOrderLineAction(PXAdapter adapter)
         {

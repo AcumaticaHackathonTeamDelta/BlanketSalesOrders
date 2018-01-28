@@ -75,6 +75,18 @@
                                                 </AddItem>
                                                 <AddItem>
                                                     <PXGridColumn TypeFullName="PX.Web.UI.PXGridColumn">
+                                                        <Prop Key="DataField" Value="OrderType" />
+                                                        <Prop Key="Width" Value="108px" />
+                                                    </PXGridColumn>
+                                                </AddItem>
+                                                <AddItem>
+                                                    <PXGridColumn TypeFullName="PX.Web.UI.PXGridColumn">
+                                                        <Prop Key="DataField" Value="OrderNbr" />
+                                                        <Prop Key="Width" Value="108px" />
+                                                    </PXGridColumn>
+                                                </AddItem>
+                                                <AddItem>
+                                                    <PXGridColumn TypeFullName="PX.Web.UI.PXGridColumn">
                                                         <Prop Key="DataField" Value="TranDesc" />
                                                         <Prop Key="Width" Value="200px" />
                                                     </PXGridColumn>
@@ -126,4 +138,30 @@
             <PXGridColumn DataField="BaseOrderQty" OriginalIndex="30" />
         </Children>
     </PXGridLevel>
+    <PXGrid ID="grid" ParentId="phG_tab_Items#0_grid" TypeFullName="PX.Web.UI.PXGrid">
+        <Children Key="ActionBar.CustomItems">
+            <AddItem>
+                <PXToolBarButton TypeFullName="PX.Web.UI.PXToolBarButton">
+                    <Prop Key="Text" Value="Add Blanket Order" />
+                    <Prop Key="DependOnGrid" Value="grid" />
+                    <Prop Key="AutoCallBack.Target" Value="ds" />
+                    <Prop Key="AutoCallBack.Command" Value="addBlanketOrderLineAction" />
+                </PXToolBarButton>
+            </AddItem>
+            <PXToolBarButton Text="Insert Row" OriginalIndex="5" />
+        </Children>
+    </PXGrid>
+    <PXDataSource ID="ds" ParentId="phDS_ds" TypeFullName="PX.Web.UI.PXDataSource">
+        <Children Key="CallbackCommands">
+            <AddItem>
+                <PXDSCallbackCommand TypeFullName="PX.Web.UI.PXDSCallbackCommand">
+                    <Prop Key="CommitChanges" Value="true" />
+                    <Prop Key="Name" Value="addBlanketOrderLineAction" />
+                    <Prop Key="Visible" Value="False" />
+                    <Prop Key="DependOnGrid" Value="grid" />
+                </PXDSCallbackCommand>
+            </AddItem>
+            <PXDSCallbackCommand Name="PasteLine" OriginalIndex="9" />
+        </Children>
+    </PXDataSource>
 </Page>

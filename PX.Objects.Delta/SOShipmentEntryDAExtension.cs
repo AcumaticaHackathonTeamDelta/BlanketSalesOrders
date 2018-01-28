@@ -1,9 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using PX.Data;
-using PX.Objects.Common.Extensions;
-using PX.Objects.CS;
+﻿using PX.Data;
 using PX.Objects.SO;
 
 namespace PX.Objects.Delta
