@@ -15,6 +15,13 @@ namespace PX.Objects.Delta
             Where<BlanketSOLine.openQty, Greater<decimal0>,
             And<BlanketSOLine.customerID, Equal<Current<SOOrder.customerID>>>>> blanketLinesSelected;
 
+        // Required to extend the shipments tab - queried results for blanket orders
+        public PXSelectJoin<SOOrderShipment,
+            LeftJoin<SOShipment, On<SOShipment.shipmentNbr, Equal<SOOrderShipment.shipmentNbr>,
+                And<SOShipment.shipmentType, Equal<SOOrderShipment.shipmentType>>>>,
+            Where<SOOrderShipment.orderType, Equal<Current<SOOrder.orderType>>,
+                And<SOOrderShipment.orderNbr, Equal<Current<SOOrder.orderNbr>>>>> shipmentlist;
+
         /// <summary>
         /// Does the current order type indicate the order is a blanket order
         /// </summary>
@@ -160,5 +167,44 @@ namespace PX.Objects.Delta
 
             Base.Transactions.Update(newRow);
         }
+
+        public IEnumerable Shipmentlist()
+        {
+            if (IsBlanketOrder)
+            {
+                // list out shipments for the blanket order
+                foreach (var shipline in PXSelectJoinGroupBy<SOLine, InnerJoin<SOShipLine,
+                                            On<SOLine.orderType, Equal<SOShipLine.origOrderType>,
+                                                And<SOLine.orderNbr, Equal<SOShipLine.origOrderNbr>,
+                                                And<SOLine.lineNbr, Equal<SOShipLine.origLineNbr>>>>>,
+                                        Where<SOLineDAExtension.dABlanketOrderType, Equal<Current<SOOrder.orderType>>,
+                                            And<SOLineDAExtension.dABlanketOrderNbr, Equal<Current<SOOrder.orderNbr>>>>,
+                                        Aggregate<GroupBy<SOLine.orderType, GroupBy<SOLine.orderNbr>>>>.Select(Base))
+                {
+                    var soline = (SOLine)shipline;
+                    foreach (var line in PXSelectJoin<SOOrderShipment,
+                                            LeftJoin<SOShipment, On<SOShipment.shipmentNbr, Equal<SOOrderShipment.shipmentNbr>,
+                                                And<SOShipment.shipmentType, Equal<SOOrderShipment.shipmentType>>>>,
+                                            Where<SOOrderShipment.orderType, Equal<Required<SOOrder.orderType>>,
+                                                And<SOOrderShipment.orderNbr, Equal<Required<SOOrder.orderNbr>>>>>.Select(Base, soline.OrderType, soline.OrderNbr))
+                    {
+                        yield return line;
+                    }
+                }
+            }
+            else
+            {
+                // when not blanket order
+                foreach (var line in PXSelectJoin<SOOrderShipment,
+                                        LeftJoin<SOShipment, On<SOShipment.shipmentNbr, Equal<SOOrderShipment.shipmentNbr>,
+                                            And<SOShipment.shipmentType, Equal<SOOrderShipment.shipmentType>>>>,
+                                        Where<SOOrderShipment.orderType, Equal<Current<SOOrder.orderType>>,
+                                            And<SOOrderShipment.orderNbr, Equal<Current<SOOrder.orderNbr>>>>>.Select(Base))
+                {
+                    yield return line;
+                }
+            }
+        }
+
     }
 }
