@@ -1,15 +1,7 @@
 ﻿using System;
 using PX.Data;
-using PX.Objects.CM;
-using PX.Objects.AR;
 using PX.Objects.IN;
-using PX.Objects.TX;
-using PX.Objects.GL;
-using PX.Objects.CS;
-using PX.Objects.CR;
-using PX.Objects.PM;
 using PX.Objects.SO;
-using PX.Objects.Common;
 
 namespace PX.Objects.Delta
 {
@@ -17,43 +9,43 @@ namespace PX.Objects.Delta
     [Serializable]
     public class SOLineDAExtension : PXCacheExtension<SOLine>
     {
-        #region Selected
-        public abstract class dAselected : PX.Data.IBqlField
-        {
-        }
-        protected bool? _Selected = false;
-        [PXBool]
-        [PXDefault(false)]
-        [PXUIField(DisplayName = "Selected")]
-        public virtual bool? Selected
-        {
-            get
-            {
-                return _Selected;
-            }
-            set
-            {
-                _Selected = value;
-            }
-        }
-        #endregion
+        //#region DASelected
+        //public abstract class dASelected : PX.Data.IBqlField
+        //{
+        //}
+        //protected bool? _DASelected = false;
+        //[PXBool]
+        //[PXDefault(false)]
+        //[PXUIField(DisplayName = "Selected")]
+        //public virtual bool? DASelected
+        //{
+        //    get
+        //    {
+        //        return _DASelected;
+        //    }
+        //    set
+        //    {
+        //        _DASelected = value;
+        //    }
+        //}
+        //#endregion
         #region DABlanketOrderType
-        [PXDBString(2, IsKey = true, IsFixed = true, InputMask = "")]
-        [PXUIField(DisplayName = "DABlanket Order Type")]
+        [PXDBString(2, IsFixed = true)]
+        [PXUIField(DisplayName = "Blanket Order Type")]
         public virtual string DABlanketOrderType { get; set; }
         public abstract class dABlanketOrderType : IBqlField { }
         #endregion
 
         #region DABlanketOrderNbr
-        [PXDBString(15, IsKey = true, IsUnicode = true, InputMask = "")]
-        [PXUIField(DisplayName = "DABlanket Order Nbr")]
+        [PXDBString(15, IsUnicode = true)]
+        [PXUIField(DisplayName = "Blanket Order Nbr")]
         public virtual string DABlanketOrderNbr { get; set; }
         public abstract class dABlanketOrderNbr : IBqlField { }
         #endregion
 
         #region DABlanketLineNbr
-        [PXDBInt(IsKey = true)]
-        [PXUIField(DisplayName = "DABlanket Line Nbr")]
+        [PXDBInt]
+        [PXUIField(DisplayName = "Blanket Line Nbr")]
         public virtual int? DABlanketLineNbr { get; set; }
         public abstract class dABlanketLineNbr : IBqlField { }
         #endregion
