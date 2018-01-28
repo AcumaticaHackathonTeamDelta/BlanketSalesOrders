@@ -6,25 +6,14 @@ using PX.Objects.SO;
 
 namespace PX.Objects.Delta
 {
-
     /// <summary>
     /// Sales Order Entry - Delta graph extension
     /// </summary>
     public class SOOrderEntryDAExtension : PXGraphExtension<SOOrderEntry>
     {
-        //View for Add Blanket lines panel
-        //public PXSelectJoin<SOLine,
-        //    InnerJoin<SOOrderType, On<SOLine.orderType, Equal<SOOrderType.orderType>>>,
-        //    Where<SOOrderTypeDAExtension.dAIsBlanketOrder, Equal<True>,
-        //        And<SOLine.openQty, Greater<decimal0>>>,
-        //    OrderBy<Asc<SOLine.orderType, Asc<SOLine.orderNbr, Asc<SOLine.sortOrder, Asc<SOLine.lineNbr>>>>>> blanketLinesSelected;
-
-        public PXSelect<BlanketSOLine, Where<BlanketSOLine.openQty, Greater<decimal0>>> blanketLinesSelected;
-
-        //public PXSelect<SOLine,
-        //    Where<SOLineDAExtension.dABlanketOrderType, Equal<Optional<SOLineDAExtension.dABlanketOrderType>>,
-        //        And<SOLineDAExtension.dABlanketOrderNbr, Equal<Optional<SOLineDAExtension.dABlanketOrderNbr>>,
-        //            And<SOLineDAExtension.dABlanketLineNbr, Equal<Optional<SOLineDAExtension.dABlanketLineNbr>>>>>> blanketLinkedLines;
+        public PXSelect<BlanketSOLine, 
+            Where<BlanketSOLine.openQty, Greater<decimal0>,
+            And<BlanketSOLine.customerID, Equal<Current<SOOrder.customerID>>>>> blanketLinesSelected;
 
         /// <summary>
         /// Does the current order type indicate the order is a blanket order
@@ -48,29 +37,49 @@ namespace PX.Objects.Delta
         {
             del?.Invoke(cache, e);
 
-            // Need to disable/hide add blanket lines for blanket orders or non SO types...
-
-            //hide custom open order qty column of soline extension
             PXUIFieldAttribute.SetVisible<SOLineDAExtension.dABlanketOrderQty>(Base.Transactions.Cache, null, IsBlanketOrder);
-
         }
 
         protected virtual void SOLine_RowUpdated(PXCache sender, PXRowUpdatedEventArgs e)
         {
             var row = (SOLine)e.Row;
             var oldRow = (SOLine)e.OldRow;
-            if (row == null || oldRow == null || !IsBlanketOrder)
+            if (row == null || oldRow == null)
             {
                 return;
             }
 
             var rowExt = row.GetExtension<SOLineDAExtension>();
-
             var orderQtyChange = oldRow.OrderQty.GetValueOrDefault() - row.OrderQty.GetValueOrDefault();
-            if (orderQtyChange != 0)
+            if (orderQtyChange == 0)
+            {
+                return;
+            }
+
+            if (IsBlanketOrder)
             {
                 row.OpenQty = Math.Max(row.OrderQty.GetValueOrDefault() - rowExt.DABlanketOrderQty.GetValueOrDefault(), 0m);
+                return;
             }
+
+            var parentBlanketLine = (BlanketSOLine)PXSelect<BlanketSOLine,
+                Where<BlanketSOLine.orderType, Equal<Required<BlanketSOLine.orderType>>,
+                    And<BlanketSOLine.orderNbr, Equal<Required<BlanketSOLine.orderNbr>>,
+                        And<BlanketSOLine.lineNbr, Equal<Required<BlanketSOLine.lineNbr>>>>>>.Select(Base,
+                rowExt.DABlanketOrderType, rowExt.DABlanketOrderNbr, rowExt.DABlanketLineNbr);
+
+            if (parentBlanketLine == null)
+            {
+                return;
+            }
+
+            parentBlanketLine.DABlanketOrderQty += orderQtyChange * -1;
+            if (parentBlanketLine.DABlanketOrderQty.GetValueOrDefault() < 0m)
+            {
+                parentBlanketLine.DABlanketOrderQty = 0m;
+            }
+            parentBlanketLine.OpenQty = Math.Max(parentBlanketLine.OrderQty.GetValueOrDefault() - parentBlanketLine.DABlanketOrderQty.GetValueOrDefault(), 0m);
+            blanketLinesSelected.Update(parentBlanketLine);
         }
 
         /// <summary>
@@ -129,6 +138,27 @@ namespace PX.Objects.Delta
         private void AddSOLine(BlanketSOLine row)
         {
             // Add the lines to the order...
+            if (row?.OrderNbr == null)
+            {
+                return;
+            }
+
+            var newRow = Base.Transactions.Insert(new SOLine());
+            newRow.InventoryID = row.InventoryID;
+            newRow.SubItemID = row.SubItemID;
+            newRow.SiteID = row.SiteID;
+            newRow.LocationID = row.LocationID;
+            newRow.OrderQty = row.OpenQty;
+
+            var newRowExt = newRow.GetExtension<SOLineDAExtension>();
+            if (newRowExt != null)
+            {
+                newRowExt.DABlanketOrderType = row.OrderType;
+                newRowExt.DABlanketOrderNbr = row.OrderNbr;
+                newRowExt.DABlanketLineNbr = row.LineNbr;
+            }
+
+            Base.Transactions.Update(newRow);
         }
     }
 }

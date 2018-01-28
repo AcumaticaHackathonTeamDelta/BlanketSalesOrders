@@ -1,7 +1,10 @@
 ﻿using System;
 using PX.Data;
+using PX.Data.ReferentialIntegrity.Attributes;
+using PX.Objects.AR;
 using PX.Objects.CM;
 using PX.Objects.Common;
+using PX.Objects.CR;
 using PX.Objects.CS;
 using PX.Objects.IN;
 using PX.Objects.SO;
@@ -12,9 +15,11 @@ namespace PX.Objects.Delta
         InnerJoin<SOOrderType, On<SOOrderType.orderType, Equal<SOLine.orderType>>,
         InnerJoin<SOOrderTypeOperation,
               On<SOOrderTypeOperation.orderType, Equal<SOLine.orderType>,
-                And<SOOrderTypeOperation.operation, Equal<SOLine.operation>>>>>,
+                And<SOOrderTypeOperation.operation, Equal<SOLine.operation>>>,
+            InnerJoin<SOOrder, On<SOLine.orderType, Equal<SOOrder.orderType>,
+                And<SOLine.orderNbr, Equal<SOOrder.orderNbr>>>>>>,
         Where<SOLine.lineType, NotEqual<SOLineType.miscCharge>,
-        And<SOOrderTypeDAExtension.dAIsBlanketOrder, Equal<True>>>>), new Type[] { typeof(SOLine) }, Persistent = false)]
+        And<SOOrderTypeDAExtension.dAIsBlanketOrder, Equal<True>>>>), new Type[] { typeof(SOLine) }, Persistent = true)]
     [Serializable]
     public class BlanketSOLine : IBqlTable, IItemPlanMaster, ISortOrder
     {
@@ -35,6 +40,26 @@ namespace PX.Objects.Delta
             set
             {
                 _Selected = value;
+            }
+        }
+        #endregion
+        #region CustomerID
+        public abstract class customerID : PX.Data.IBqlField
+        {
+        }
+        protected Int32? _CustomerID;
+        [PXDefault]
+        [Customer(BqlField = typeof(SOOrder.customerID))]
+
+        public virtual Int32? CustomerID
+        {
+            get
+            {
+                return this._CustomerID;
+            }
+            set
+            {
+                this._CustomerID = value;
             }
         }
         #endregion
@@ -236,6 +261,24 @@ namespace PX.Objects.Delta
             set
             {
                 this._SiteID = value;
+            }
+        }
+        #endregion
+        #region LocationID
+        public abstract class locationID : PX.Data.IBqlField
+        {
+        }
+        protected Int32? _LocationID;
+        [Location(typeof(BlanketSOLine.siteID))]
+        public virtual Int32? LocationID
+        {
+            get
+            {
+                return this._LocationID;
+            }
+            set
+            {
+                this._LocationID = value;
             }
         }
         #endregion
@@ -739,6 +782,22 @@ namespace PX.Objects.Delta
 
         [PXDBTimestamp(BqlField = typeof(SOLine.Tstamp), RecordComesFirst = true)]
         public virtual byte[] tstamp { get; set; }
+        #endregion
+
+        #region DABlanketOrderQty
+        [PXDefault(TypeCode.Decimal, "0.0", PersistingCheck = PXPersistingCheck.Nothing)]
+        [PXDBQuantity(typeof(BlanketSOLine.uOM), typeof(BlanketSOLine.dABlanketBaseOrderQty), BqlField = typeof(SOLineDAExtension.dABlanketOrderQty))]
+        [PXUIField(DisplayName = "Blanket Order Qty")]
+        public virtual decimal? DABlanketOrderQty { get; set; }
+        public abstract class dABlanketOrderQty : IBqlField { }
+        #endregion
+
+        #region DABlanketBaseOrderQty
+        [PXDefault(TypeCode.Decimal, "0.0", PersistingCheck = PXPersistingCheck.Nothing)]
+        [PXDBQuantity(BqlField = typeof(SOLineDAExtension.dABlanketBaseOrderQty))]
+        [PXUIField(DisplayName = "Blanket Base Order Qty")]
+        public virtual decimal? DABlanketBaseOrderQty { get; set; }
+        public abstract class dABlanketBaseOrderQty : IBqlField { }
         #endregion
     }
 }
